@@ -92,20 +92,25 @@
     </script>
 
     <script id='jql-query'>
-      var defaultProperties = {"$city":true,"$region":true,"mp_country_code":true,"$brand":true,"$bluetooth_version":true,"$device":true,"$os":true,"$app_release":true,"$app_version":true,"$carrier":true,"$lib_version":true,"$wifi":true,"$screen_width":true,"$screen_height":true,"$model":true,"$os_version":true,"$manufacturer":true,"$screen_dpi":true,"$has_telephone":true,"has_nfc":true,"$bluetooth_enabled":true,"$browser":true,"$initial_referrer":true,"$initial_referring_domain":true,"$referrer":true,"$referring_domain":true,"$browser_version":true,"mp_keyword":true,"$search_engine":true,"utm_source":true,"utm_medium":true,"utm_campaign":true,"utm_content":true,"utm_term":true,"$radio":true,"mp_device_model":true,"$google_play_services":true,"mp_lib":true,"campaign_id":true,"message_id":true,"message_subtype":true,"message_type":true,"$answer_count":true,"survey_id":true,"collection_id":true,"$survey_shown":true,"$watch_model":true,"$ios_ifa":true,"$current_url":true,"$duration":true,"$from_binding":true,"$experiments":true,"$import":true,"distinct_id":true,"time":true,"$has_nfc":true};
+     var defaultProperties = {"$city":true,"$region":true,"mp_country_code":true,"$brand":true,"$bluetooth_version":true,"$device":true,"$os":true,"$app_release":true,"$app_version":true,"$carrier":true,"$lib_version":true,"$wifi":true,"$screen_width":true,"$screen_height":true,"$model":true,"$os_version":true,"$manufacturer":true,"$screen_dpi":true,"$has_telephone":true,"has_nfc":true,"$bluetooth_enabled":true,"$browser":true,"$initial_referrer":true,"$initial_referring_domain":true,"$referrer":true,"$referring_domain":true,"$browser_version":true,"mp_keyword":true,"$search_engine":true,"utm_source":true,"utm_medium":true,"utm_campaign":true,"utm_content":true,"utm_term":true,"$radio":true,"mp_device_model":true,"$google_play_services":true,"mp_lib":true,"campaign_id":true,"message_id":true,"message_subtype":true,"message_type":true,"$answer_count":true,"survey_id":true,"collection_id":true,"$survey_shown":true,"$watch_model":true,"$ios_ifa":true,"$current_url":true,"$duration":true,"$from_binding":true,"$experiments":true,"$import":true,"distinct_id":true,"time":true,"$has_nfc":true};
 
       var defaultPeopleProperties = {"$city":true,"$region":true,"$mp_country_code":true,"$timezone":true,"$browser_version":true,"$browser":true,"$initial_referrer":true,"$initial_referring_domain":true,"$os":true,"$last_seen":true,"$ios_app_release":true,"$ios_app_version":true,"$ios_device_model":true,"$ios_lib_version":true,"$ios_version":true,"$ios_ifa":true,"$android_app_version":true,"$android_app_version_code":true,"$android_lib_version":true,"$android_os":true,"$android_os_version":true,"$android_brand":true,"$android_model":true,"$android_manufacturer":true};
 
       var defaultEvents = {'$campaign_delivery':true, '$campaign_marked_spam':true, '$campaign_bounced':true, '$campaign_open':true, '$experiment_started':true, '$show_survey':true};
 
-      function main() {
+function main() {
         var from_date = new Date(new Date().valueOf() - (params.numDays -1)*24*60*60*1000).toISOString().slice(0,-14);
         var to_date = new Date().toISOString().slice(0,-14);
         var events = Events({from_date: from_date, to_date: to_date});
-        return join(events, People())
+        return join(
+          events, 
+          People(),
+          {
+            type:"left",
+          })
         .filter(function(item){
-    return item.event.properties["App name"] == "Kontakt 5"
-  })
+          return item.event.properties["App name"] == "Kontakt 5"
+        })
         .groupByUser(function(state, items) {
           state = state || {};
           var stateUpdate = function(item) {
